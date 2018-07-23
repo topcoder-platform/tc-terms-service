@@ -57,7 +57,7 @@ configure_aws_cli() {
 
 build_ecr_image() {
   echo "Building docker image..."
-  eval $(aws ecr get-login  --region $AWS_REGION)
+  eval $(aws ecr get-login  --region $AWS_REGION --no-include-email)
   TAG=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$AWS_REPOSITORY:$CIRCLE_SHA1
   docker build -t $TAG .
   echo "Docker image built with the TAG :"
