@@ -27,6 +27,7 @@ install_deploysuite: &install_deploysuite
 # Instructions of deployment
 deploy_steps: &deploy_steps
   - checkout
+  - run: *install_deploysuite  
   - attach_workspace:
       at: .
   - run: *install_awscli
