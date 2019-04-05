@@ -16,6 +16,14 @@ install_awscli: &install_awscli
   command: |
     sudo pip install awscli awsebcli --upgrade
 
+install_deploysuite: &install_deploysuite
+          name: Installation of install_deploysuite.
+          command: |
+            git clone --branch v1.3 https://github.com/topcoder-platform/tc-deploy-scripts ../buildscript
+            cp ./../buildscript/master_deploy.sh .
+            cp ./../buildscript/buildenv.sh .
+            cp ./../buildscript/awsconfiguration.sh .
+
 # Instructions of deployment
 deploy_steps: &deploy_steps
   - checkout
@@ -25,7 +33,15 @@ deploy_steps: &deploy_steps
   # Install commandline json processor
   - run: sudo apt-get update && sudo apt-get install -y jq
   - setup_remote_docker
-  - run: .deploy/ecs_deploy.sh $DEPLOY_ENV
+  - run:
+      name: "configuring aws environment"
+      command: |
+        ./awsconfiguration.sh $DEPLOY_ENV
+  - run:
+      name: "configuring aws environment"
+      command: |
+        source awsenvconf  
+        .deploy/ecs_deploy.sh $DEPLOY_ENV
 
 jobs:
   build:
@@ -57,6 +73,7 @@ workflows:
     jobs:
       - build
       - deploy_dev:
+          context : org-global      
           filters:
             branches:
               only:
@@ -65,6 +82,7 @@ workflows:
           requires:
             - build
       - deploy_prod:
+          context : org-global      
           filters:
             branches:
               only: master
