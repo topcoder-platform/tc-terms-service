@@ -42,7 +42,7 @@ deploy_steps: &deploy_steps
       name: "Building image"
       command: |
         source awsenvconf  
-        ./build_image.sh 
+        .deploy/build_image.sh 
 
   - deploy:
       name: "Deploying image"
