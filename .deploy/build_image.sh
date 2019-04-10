@@ -1,6 +1,7 @@
 #!/bin/bash
 JQ="jq --raw-output --exit-status"
-
+ENV=$1
+ENV_CONFIG=`echo "$ENV" | tr '[:upper:]' '[:lower:]'`
 # Define script variables
 DEPLOY_DIR="$( cd "$( dirname "$0" )" && pwd )"
 WORKSPACE=$PWD
@@ -18,7 +19,7 @@ echo "Logging into docker"
 echo "############################"
 #docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASSWD
 #docker login -u $DOCKER_USER -p $DOCKER_PASSWD
-
+aws s3 cp "s3://appirio-platform-$ENV_CONFIG/services/common/dockercfg" ~/.dockercfg
 echo "Building docker image..."
 #eval $(aws ecr get-login  --region $AWS_REGION --no-include-email)
 #TAG=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$AWS_REPOSITORY:$CIRCLE_BUILD_NUM
