@@ -15,34 +15,48 @@ install_awscli: &install_awscli
   name: "Install awscli"
   command: |
     sudo pip install awscli awsebcli --upgrade
-    aws --version
-    eb --version
+
+install_deploysuite: &install_deploysuite
+          name: Installation of install_deploysuite.
+          command: |
+            git clone --branch v1.3 https://github.com/topcoder-platform/tc-deploy-scripts ../buildscript
+            cp ./../buildscript/master_deploy.sh .
+            cp ./../buildscript/buildenv.sh .
+            cp ./../buildscript/awsconfiguration.sh .
 
 # Instructions of deployment
 deploy_steps: &deploy_steps
   - checkout
+  - run: *install_deploysuite  
   - attach_workspace:
       at: .
   - run: *install_awscli
   # Install commandline json processor
   - run: sudo apt-get update && sudo apt-get install -y jq
   - setup_remote_docker
-  - run: .deploy/ecs_deploy.sh $DEPLOY_ENV
+  - run:
+      name: "configuring aws environment"
+      command: |
+        ./awsconfiguration.sh $DEPLOY_ENV
+  - run:
+      name: "Building image"
+      command: |
+        source awsenvconf  
+        .deploy/build_image.sh ${DEPLOY_ENV}
+
+  - deploy:
+      name: "Deploying image"
+      command: |
+        source awsenvconf  
+        ./buildenv.sh -e ${DEPLOY_ENV} -b ${DEPLOY_ENV}-tc-terms-service-deployvar
+        source buildenvvar
+        ./master_deploy.sh -d ECS -e ${DEPLOY_ENV} -t latest -s ${DEPLOY_ENV}-tc-terms-service-appvar -i tc-terms-service -p FARGATE
 
 jobs:
   build:
     <<: *java_env
     steps:
-      - checkout
-      - run:
-          name: Configuring maven
-          command: |
-            MVNSERVERSETTING='<server>\n  <id>tcrepo</id> \n <username>${env.MVNUSERNAME}</username> \n <password>${env.MVNPASSWD}</password> \n  </server> '
-            C=$(echo $MVNSERVERSETTING | sed 's/\//\\\//g')
-            sudo sed -i.bak "/<\/servers>/ s/.*/${C}\n&/" /opt/apache-maven/conf/settings.xml
-            MVNSERVERSETTING='<server>\n  <id>tcreposnap</id> \n <username>${env.MVNUSERNAME}</username> \n <password>${env.MVNPASSWD}</password> \n  </server> '
-            C=$(echo $MVNSERVERSETTING | sed 's/\//\\\//g')
-            sudo sed -i.bak "/<\/servers>/ s/.*/${C}\n&/" /opt/apache-maven/conf/settings.xml          
+      - checkout        
       - run: mvn clean compile package
       - persist_to_workspace:
           root: .
@@ -68,14 +82,16 @@ workflows:
     jobs:
       - build
       - deploy_dev:
+          context : org-global      
           filters:
             branches:
               only:
                 - dev
-                - dev-circleci2
+                - dev-sts
           requires:
             - build
       - deploy_prod:
+          context : org-global      
           filters:
             branches:
               only: master

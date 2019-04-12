@@ -9,10 +9,10 @@ fi
 #Compute ENV variables from CC
 echo "$ENV before case conversion"
 
-AWS_REGION=$(eval "echo \$${ENV}_AWS_REGION")
-AWS_ACCESS_KEY_ID=$(eval "echo \$${ENV}_AWS_ACCESS_KEY_ID")
-AWS_SECRET_ACCESS_KEY=$(eval "echo \$${ENV}_AWS_SECRET_ACCESS_KEY")
-AWS_ACCOUNT_ID=$(eval "echo \$${ENV}_AWS_ACCOUNT_ID")
+#AWS_REGION=$(eval "echo \$${ENV}_AWS_REGION")
+#AWS_ACCESS_KEY_ID=$(eval "echo \$${ENV}_AWS_ACCESS_KEY_ID")
+#AWS_SECRET_ACCESS_KEY=$(eval "echo \$${ENV}_AWS_SECRET_ACCESS_KEY")
+#AWS_ACCOUNT_ID=$(eval "echo \$${ENV}_AWS_ACCOUNT_ID")
 AWS_REPOSITORY=$(eval "echo \$${ENV}_AWS_REPOSITORY")
 AWS_ECS_CLUSTER=$(eval "echo \$${ENV}_AWS_ECS_CLUSTER")
 AWS_ECS_SERVICE=$(eval "echo \$${ENV}_AWS_ECS_SERVICE")
@@ -23,6 +23,7 @@ OLTP_PW=$(eval "echo \$${ENV}_OLTP_PW")
 OLTP_URL=$(eval "echo \$${ENV}_OLTP_URL") 
 OLTP_USER=$(eval "echo \$${ENV}_OLTP_USER")
 DOCUSIGN_RETURN_URL=$(eval "echo \$${ENV}_DOCUSIGN_RETURN_URL")
+TC_JWT_KEY=$(eval "echo \$${ENV}_TC_JWT_KEY")
 #APP_NAME
 
 JQ="jq --raw-output --exit-status"
