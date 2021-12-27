@@ -11,7 +11,7 @@
 		<core.api.version>4.2.0</core.api.version>
 		<supply-library.version>1.0.22-SNAPSHOT</supply-library.version>
 		<powermock.version>1.5.4</powermock.version>
-		<spring.version>4.2.5.RELEASE</spring.version>
+		<spring.version>4.3.30.RELEASE</spring.version>
 		<jackson-version>2.7.3</jackson-version>
 	</properties>
 
@@ -47,7 +47,7 @@
 							<exclude>**/*Test*.class</exclude>
 						</excludes>
 					</instrumentation>
-					<check />
+					<check/>
 				</configuration>
 				<executions>
 					<execution>
@@ -104,10 +104,8 @@
 								<transformer implementation="org.apache.maven.plugins.shade.resource.XmlAppendingTransformer">
 									<resource>META-INF/persistence.xml</resource>
 								</transformer>
-								<transformer
-                                        implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
-                                <transformer
-                                        implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+								<transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                                     <mainClass>com.appirio.service.terms.TermsServiceApplication</mainClass>
                                 </transformer>
                             </transformers>
